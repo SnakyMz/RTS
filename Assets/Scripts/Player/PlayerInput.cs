@@ -8,11 +8,14 @@ public class PlayerInput : MonoBehaviour
     [SerializeField] CinemachineCamera cinemachineCamera;
     [SerializeField] float keyboardPanSpeed = 15f;
     [SerializeField] float zoomSpeed = 5;
+    [SerializeField] float rotationSpeed = 2.5f;
     [SerializeField] float minZoomDistance = 7.5f;
 
     CinemachineFollow cinemachineFollow;
     Vector3 startingFollowOffset;
     float zoomStartTime;
+    float rotationStartTime;
+    float maxRotationDistance;
 
     void Awake()
     {
@@ -22,6 +25,7 @@ public class PlayerInput : MonoBehaviour
         }
 
         startingFollowOffset = cinemachineFollow.FollowOffset;
+        maxRotationDistance = Mathf.Abs(startingFollowOffset.z);
     }
 
     // Update is called once per frame
@@ -29,6 +33,7 @@ public class PlayerInput : MonoBehaviour
     {
         HandlePanning();
         HandleZooming();
+        HandleRotating();
     }
 
     private void HandlePanning()
@@ -81,5 +86,35 @@ public class PlayerInput : MonoBehaviour
     bool SetZoomTime()
     {
         return Keyboard.current.endKey.wasPressedThisFrame || Keyboard.current.endKey.wasReleasedThisFrame;
+    }
+
+    void HandleRotating()
+    {
+        if (SetRotationTime())
+        {
+            rotationStartTime = Time.time;
+        }
+        float rotationTime = Mathf.Clamp01((Time.time - rotationStartTime) * rotationSpeed);
+        Vector3 targetFollowOffset;
+
+        if (Keyboard.current.pageDownKey.isPressed)
+        {
+            targetFollowOffset = new Vector3(maxRotationDistance, cinemachineFollow.FollowOffset.y, 0);
+        }
+        else if (Keyboard.current.pageUpKey.isPressed)
+        {
+            targetFollowOffset = new Vector3(-maxRotationDistance, cinemachineFollow.FollowOffset.y, 0);
+        }
+        else
+        {
+            targetFollowOffset = new Vector3(startingFollowOffset.x, cinemachineFollow.FollowOffset.y, startingFollowOffset.z);
+        }
+
+        cinemachineFollow.FollowOffset = Vector3.Slerp(cinemachineFollow.FollowOffset, targetFollowOffset, rotationTime);
+    }
+
+    bool SetRotationTime()
+    {
+        return Keyboard.current.pageDownKey.wasPressedThisFrame || Keyboard.current.pageUpKey.wasPressedThisFrame || Keyboard.current.pageDownKey.wasReleasedThisFrame || Keyboard.current.pageUpKey.wasReleasedThisFrame;
     }
 }
