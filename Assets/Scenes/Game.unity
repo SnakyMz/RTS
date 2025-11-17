@@ -4052,7 +4052,8 @@ MonoBehaviour:
   cameraTarget: {fileID: 355436478}
   cinemachineCamera: {fileID: 707042582}
   keyboardPanSpeed: 15
-  zoomSpeed: 1
+  zoomSpeed: 5
+  rotationSpeed: 2.5
   minZoomDistance: 7.5
 --- !u!1001 &332197402
 PrefabInstance:
