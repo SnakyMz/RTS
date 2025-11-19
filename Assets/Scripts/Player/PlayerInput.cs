@@ -6,7 +6,8 @@ public class PlayerInput : MonoBehaviour
 {
     [SerializeField] Transform cameraTarget;
     [SerializeField] CinemachineCamera cinemachineCamera;
-    [SerializeField] float keyboardPanSpeed = 15f;
+    [SerializeField] float edgePanSize = 50f;
+    [SerializeField] float panSpeed = 15f;
     [SerializeField] float zoomSpeed = 5;
     [SerializeField] float rotationSpeed = 2.5f;
     [SerializeField] float minZoomDistance = 7.5f;
@@ -39,22 +40,46 @@ public class PlayerInput : MonoBehaviour
     private void HandlePanning()
     {
         Vector2 moveInput = Vector2.zero;
-
+        
+        // Keyboard Input
         if (Keyboard.current.upArrowKey.isPressed)
         {
-            moveInput.y += keyboardPanSpeed;
+            moveInput.y += panSpeed;
         }
         if (Keyboard.current.downArrowKey.isPressed)
         {
-            moveInput.y -= keyboardPanSpeed;
+            moveInput.y -= panSpeed;
         }
         if (Keyboard.current.leftArrowKey.isPressed)
         {
-            moveInput.x -= keyboardPanSpeed;
+            moveInput.x -= panSpeed;
         }
         if (Keyboard.current.rightArrowKey.isPressed)
         {
-            moveInput.x += keyboardPanSpeed;
+            moveInput.x += panSpeed;
+        }
+
+        // Mouse Input
+        Vector2 mousePosition = Mouse.current.position.ReadValue();
+
+        int screenWidth = Screen.width;
+        int screenHeight = Screen.height;
+
+        if (mousePosition.x <= edgePanSize)
+        {
+            moveInput.x -= panSpeed;
+        }
+        if (mousePosition.x >= screenWidth - edgePanSize)
+        {
+            moveInput.x += panSpeed;
+        }
+        if (mousePosition.y <= edgePanSize)
+        {
+            moveInput.y -= panSpeed;
+        }
+        if (mousePosition.y >= screenHeight - edgePanSize)
+        {
+            moveInput.y += panSpeed;
         }
 
         moveInput *= Time.deltaTime;
