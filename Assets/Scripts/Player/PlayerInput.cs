@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerInput : MonoBehaviour
 {
-    [SerializeField] Transform cameraTarget;
+    [SerializeField] Rigidbody cameraTarget;
     [SerializeField] CinemachineCamera cinemachineCamera;
     [SerializeField] float edgePanSize = 50f;
     [SerializeField] float panSpeed = 15f;
@@ -69,21 +69,22 @@ public class PlayerInput : MonoBehaviour
         {
             moveInput.x -= panSpeed;
         }
-        if (mousePosition.x >= screenWidth - edgePanSize)
+        else if (mousePosition.x >= screenWidth - edgePanSize)
         {
             moveInput.x += panSpeed;
         }
+
         if (mousePosition.y <= edgePanSize)
         {
             moveInput.y -= panSpeed;
         }
-        if (mousePosition.y >= screenHeight - edgePanSize)
+        else if (mousePosition.y >= screenHeight - edgePanSize)
         {
             moveInput.y += panSpeed;
         }
 
-        moveInput *= Time.deltaTime;
-        cameraTarget.position += new Vector3(moveInput.x, 0, moveInput.y);
+        // Apply Movement
+        cameraTarget.linearVelocity = new Vector3(moveInput.x, 0, moveInput.y);
     }
 
     void HandleZooming()
