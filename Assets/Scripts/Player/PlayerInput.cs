@@ -8,6 +8,7 @@ public class PlayerInput : MonoBehaviour
     [SerializeField] Rigidbody cameraTarget;
     [SerializeField] Camera mainCamera;
     [SerializeField] CinemachineCamera cinemachineCamera;
+    [SerializeField] LayerMask clickableLayerMask;
     [SerializeField] float edgePanSize = 50f;
     [SerializeField] float panSpeed = 15f;
     [SerializeField] float zoomSpeed = 5;
@@ -162,7 +163,7 @@ public class PlayerInput : MonoBehaviour
                 selectedUnit = null;
             }
 
-            if (Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, LayerMask.GetMask("Default")) && hit.collider.TryGetComponent(out ISelectable selectable))
+            if (Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, clickableLayerMask) && hit.collider.TryGetComponent(out ISelectable selectable))
             {
                 selectable.Select();
                 selectedUnit = selectable;
