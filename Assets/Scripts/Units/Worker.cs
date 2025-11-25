@@ -1,24 +1,38 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-[RequireComponent(typeof(NavMeshAgent))]
-
-public class Worker : MonoBehaviour
+namespace Assets.Scripts.Units
 {
-    [SerializeField] Transform target;
-    NavMeshAgent agent;
-
-    void Awake()
+    [RequireComponent(typeof(NavMeshAgent))]
+    public class Worker : MonoBehaviour, ISelectable
     {
-        agent = GetComponent<NavMeshAgent>();
-    }
+        [SerializeField] Transform target;
+        [SerializeField] GameObject decal;
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (target)
+        NavMeshAgent agent;
+
+        void Awake()
         {
-            agent.SetDestination(target.position);
+            agent = GetComponent<NavMeshAgent>();
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+            if (target)
+            {
+                agent.SetDestination(target.position);
+            }
+        }
+
+        public void Select()
+        {
+            decal.SetActive(true);
+        }
+
+        public void Deselect()
+        {
+            decal.SetActive(false);
         }
     }
 }

@@ -1,3 +1,4 @@
+using Assets.Scripts.Units;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -5,6 +6,7 @@ using UnityEngine.InputSystem;
 public class PlayerInput : MonoBehaviour
 {
     [SerializeField] Rigidbody cameraTarget;
+    [SerializeField] Camera mainCamera;
     [SerializeField] CinemachineCamera cinemachineCamera;
     [SerializeField] float edgePanSize = 50f;
     [SerializeField] float panSpeed = 15f;
@@ -17,6 +19,7 @@ public class PlayerInput : MonoBehaviour
     float zoomStartTime;
     float rotationStartTime;
     float maxRotationDistance;
+    ISelectable selectedUnit = null;
 
     void Awake()
     {
@@ -35,6 +38,7 @@ public class PlayerInput : MonoBehaviour
         HandlePanning();
         HandleZooming();
         HandleRotating();
+        HandleLeftClick();
     }
 
     private void HandlePanning()
@@ -142,5 +146,30 @@ public class PlayerInput : MonoBehaviour
     bool SetRotationTime()
     {
         return Keyboard.current.pageDownKey.wasPressedThisFrame || Keyboard.current.pageUpKey.wasPressedThisFrame || Keyboard.current.pageDownKey.wasReleasedThisFrame || Keyboard.current.pageUpKey.wasReleasedThisFrame;
+    }
+
+    void HandleLeftClick()
+    {
+        if (!mainCamera) return;
+
+        Ray cameraRay = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+
+        if (Mouse.current.leftButton.wasReleasedThisFrame)
+        {
+            if (Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, LayerMask.GetMask("Default")) && hit.collider.TryGetComponent(out ISelectable selectable))
+            {
+                selectable.Select();
+                if (selectedUnit != null && selectedUnit != selectable)
+                {
+                    selectedUnit.Deselect();
+                }
+                selectedUnit = selectable;
+            }
+            else if (selectedUnit != null)
+            {
+                selectedUnit.Deselect();
+                selectedUnit = null;
+            }
+        }
     }
 }
