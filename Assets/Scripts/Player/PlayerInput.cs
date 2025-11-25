@@ -9,6 +9,7 @@ public class PlayerInput : MonoBehaviour
     [SerializeField] Camera mainCamera;
     [SerializeField] CinemachineCamera cinemachineCamera;
     [SerializeField] LayerMask clickableLayerMask;
+    [SerializeField] LayerMask groundLayerMask;
     [SerializeField] float edgePanSize = 50f;
     [SerializeField] float panSpeed = 15f;
     [SerializeField] float zoomSpeed = 5;
@@ -178,7 +179,7 @@ public class PlayerInput : MonoBehaviour
 
         Ray cameraRay = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
 
-        if (Mouse.current.rightButton.wasReleasedThisFrame && Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, LayerMask.GetMask("Default")))
+        if (Mouse.current.rightButton.wasReleasedThisFrame && Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, groundLayerMask))
         {
             moveable.MoveTo(hit.point);
         }
