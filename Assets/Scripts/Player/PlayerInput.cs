@@ -40,6 +40,7 @@ public class PlayerInput : MonoBehaviour
         HandleZooming();
         HandleRotating();
         HandleLeftClick();
+        HandleRightClick();
     }
 
     private void HandlePanning()
@@ -168,6 +169,18 @@ public class PlayerInput : MonoBehaviour
                 selectable.Select();
                 selectedUnit = selectable;
             }
+        }
+    }
+
+    void HandleRightClick()
+    {
+        if (!mainCamera || selectedUnit == null || selectedUnit is not IMoveable moveable) return;
+
+        Ray cameraRay = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+
+        if (Mouse.current.rightButton.wasReleasedThisFrame && Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, LayerMask.GetMask("Default")))
+        {
+            moveable.MoveTo(hit.point);
         }
     }
 }

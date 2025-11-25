@@ -4,9 +4,8 @@ using UnityEngine.AI;
 namespace Assets.Scripts.Units
 {
     [RequireComponent(typeof(NavMeshAgent))]
-    public class Worker : MonoBehaviour, ISelectable
+    public class Worker : MonoBehaviour, ISelectable, IMoveable
     {
-        [SerializeField] Transform target;
         [SerializeField] GameObject decal;
 
         NavMeshAgent agent;
@@ -16,23 +15,19 @@ namespace Assets.Scripts.Units
             agent = GetComponent<NavMeshAgent>();
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-            if (target)
-            {
-                agent.SetDestination(target.position);
-            }
-        }
-
         public void Select()
         {
-            decal.SetActive(true);
+            if (decal) decal.SetActive(true);
         }
 
         public void Deselect()
         {
-            decal.SetActive(false);
+            if (decal) decal.SetActive(false);
+        }
+
+        public void MoveTo(Vector3 position)
+        {
+            agent.SetDestination(position);
         }
     }
 }
