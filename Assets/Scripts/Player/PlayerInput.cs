@@ -53,7 +53,6 @@ public class PlayerInput : MonoBehaviour
         HandlePanning();
         HandleZooming();
         HandleRotating();
-        HandleLeftClick();
         HandleRightClick();
         HandleDrag();
     }
@@ -167,22 +166,14 @@ public class PlayerInput : MonoBehaviour
 
     void HandleLeftClick()
     {
-        //if (!mainCamera) return;
+        if (!mainCamera) return;
 
-        //Ray cameraRay = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        Ray cameraRay = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
 
-        //if (Mouse.current.leftButton.wasReleasedThisFrame)
-        //{
-        //    if (selectedUnit != null)
-        //    {
-        //        selectedUnit.Deselect();
-        //    }
-
-        //    if (Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, clickableLayerMask) && hit.collider.TryGetComponent(out ISelectable selectable))
-        //    {
-        //        selectable.Select();
-        //    }
-        //}
+        if (Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, clickableLayerMask) && hit.collider.TryGetComponent(out ISelectable selectable))
+        {
+            selectable.Select();
+        }
     }
 
     void HandleRightClick()
@@ -230,7 +221,9 @@ public class PlayerInput : MonoBehaviour
         }
         else if (Mouse.current.leftButton.wasReleasedThisFrame)
         {
-            DeselectAll();
+            if (!Keyboard.current.shiftKey.isPressed) DeselectAll();
+
+            HandleLeftClick();
 
             foreach (AbstractUnit unit in selectionBoxUnits)
             {
