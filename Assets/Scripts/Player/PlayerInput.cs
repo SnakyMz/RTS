@@ -39,6 +39,7 @@ public class PlayerInput : MonoBehaviour
         maxRotationDistance = Mathf.Abs(startingFollowOffset.z);
 
         Bus<UnitSelectedEvent>.OnEvent += HandleUnitSelection;
+        Bus<UnitDeselectedEvent>.OnEvent += HandleUnitDeselection;
     }
 
     // Update is called once per frame
@@ -170,7 +171,6 @@ public class PlayerInput : MonoBehaviour
             if (selectedUnit != null)
             {
                 selectedUnit.Deselect();
-                selectedUnit = null;
             }
 
             if (Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, clickableLayerMask) && hit.collider.TryGetComponent(out ISelectable selectable))
@@ -223,15 +223,17 @@ public class PlayerInput : MonoBehaviour
 
     void HandleUnitSelection(UnitSelectedEvent evt)
     {
-        if (selectedUnit != null)
-        {
-            selectedUnit.Deselect();
-        }
         selectedUnit = evt.Unit;
+    }
+
+    void HandleUnitDeselection(UnitDeselectedEvent evt)
+    {
+        selectedUnit = null;
     }
 
     private void OnDestroy()
     {
         Bus<UnitSelectedEvent>.OnEvent -= HandleUnitSelection;
+        Bus<UnitDeselectedEvent>.OnEvent -= HandleUnitDeselection;
     }
 }
