@@ -1,8 +1,10 @@
+using Assets.Scripts.EventBus;
+using Assets.Scripts.Events;
 using Assets.Scripts.Units;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 public class PlayerInput : MonoBehaviour
 {
@@ -35,6 +37,8 @@ public class PlayerInput : MonoBehaviour
 
         startingFollowOffset = cinemachineFollow.FollowOffset;
         maxRotationDistance = Mathf.Abs(startingFollowOffset.z);
+
+        Bus<UnitSelectedEvent>.OnEvent += HandleUnitSelection;
     }
 
     // Update is called once per frame
@@ -172,7 +176,6 @@ public class PlayerInput : MonoBehaviour
             if (Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, clickableLayerMask) && hit.collider.TryGetComponent(out ISelectable selectable))
             {
                 selectable.Select();
-                selectedUnit = selectable;
             }
         }
     }
@@ -216,5 +219,19 @@ public class PlayerInput : MonoBehaviour
         float height = currentMousePosition.y - startingMousePosition.y;
         selectionBox.anchoredPosition = startingMousePosition + new Vector2(width / 2, height / 2);
         selectionBox.sizeDelta = new Vector2(Mathf.Abs(width), Mathf.Abs(height));
+    }
+
+    void HandleUnitSelection(UnitSelectedEvent evt)
+    {
+        if (selectedUnit != null)
+        {
+            selectedUnit.Deselect();
+        }
+        selectedUnit = evt.Unit;
+    }
+
+    private void OnDestroy()
+    {
+        Bus<UnitSelectedEvent>.OnEvent -= HandleUnitSelection;
     }
 }

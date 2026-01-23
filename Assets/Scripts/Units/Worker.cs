@@ -1,3 +1,5 @@
+using Assets.Scripts.EventBus;
+using Assets.Scripts.Events;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -18,6 +20,8 @@ namespace Assets.Scripts.Units
         public void Select()
         {
             if (decal) decal.SetActive(true);
+
+            Bus<UnitSelectedEvent>.Raise(new UnitSelectedEvent(this));
         }
 
         public void Deselect()
