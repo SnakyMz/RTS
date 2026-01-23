@@ -1,6 +1,7 @@
 using Assets.Scripts.EventBus;
 using Assets.Scripts.Events;
 using Assets.Scripts.Units;
+using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -26,6 +27,8 @@ public class PlayerInput : MonoBehaviour
     float zoomStartTime;
     float rotationStartTime;
     float maxRotationDistance;
+
+    HashSet<AbstractUnit> aliveUnits = new(100);
     ISelectable selectedUnit = null;
 
     void Awake()
@@ -38,6 +41,7 @@ public class PlayerInput : MonoBehaviour
         startingFollowOffset = cinemachineFollow.FollowOffset;
         maxRotationDistance = Mathf.Abs(startingFollowOffset.z);
 
+        Bus<UnitSpawnEvent>.OnEvent += HandleUnitSpawn;
         Bus<UnitSelectedEvent>.OnEvent += HandleUnitSelection;
         Bus<UnitDeselectedEvent>.OnEvent += HandleUnitDeselection;
     }
@@ -221,6 +225,11 @@ public class PlayerInput : MonoBehaviour
         selectionBox.sizeDelta = new Vector2(Mathf.Abs(width), Mathf.Abs(height));
     }
 
+    void HandleUnitSpawn(UnitSpawnEvent evt)
+    {
+        aliveUnits.Add(evt.Unit);
+    }
+
     void HandleUnitSelection(UnitSelectedEvent evt)
     {
         selectedUnit = evt.Unit;
@@ -233,6 +242,7 @@ public class PlayerInput : MonoBehaviour
 
     private void OnDestroy()
     {
+        Bus<UnitSpawnEvent>.OnEvent -= HandleUnitSpawn;
         Bus<UnitSelectedEvent>.OnEvent -= HandleUnitSelection;
         Bus<UnitDeselectedEvent>.OnEvent -= HandleUnitDeselection;
     }
