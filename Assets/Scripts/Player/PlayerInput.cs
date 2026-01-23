@@ -29,7 +29,8 @@ public class PlayerInput : MonoBehaviour
     float maxRotationDistance;
 
     HashSet<AbstractUnit> aliveUnits = new(100);
-    ISelectable selectedUnit = null;
+    HashSet<AbstractUnit> selectionBoxUnits = new(20);
+    List<ISelectable> selectedUnits = new(20);
 
     void Awake()
     {
@@ -166,33 +167,39 @@ public class PlayerInput : MonoBehaviour
 
     void HandleLeftClick()
     {
-        if (!mainCamera) return;
+        //if (!mainCamera) return;
 
-        Ray cameraRay = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        //Ray cameraRay = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
 
-        if (Mouse.current.leftButton.wasReleasedThisFrame)
-        {
-            if (selectedUnit != null)
-            {
-                selectedUnit.Deselect();
-            }
+        //if (Mouse.current.leftButton.wasReleasedThisFrame)
+        //{
+        //    if (selectedUnit != null)
+        //    {
+        //        selectedUnit.Deselect();
+        //    }
 
-            if (Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, clickableLayerMask) && hit.collider.TryGetComponent(out ISelectable selectable))
-            {
-                selectable.Select();
-            }
-        }
+        //    if (Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, clickableLayerMask) && hit.collider.TryGetComponent(out ISelectable selectable))
+        //    {
+        //        selectable.Select();
+        //    }
+        //}
     }
 
     void HandleRightClick()
     {
-        if (!mainCamera || selectedUnit == null || selectedUnit is not IMoveable moveable) return;
+        if (selectedUnits.Count == 0) return;
 
         Ray cameraRay = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
 
         if (Mouse.current.rightButton.wasReleasedThisFrame && Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, groundLayerMask))
         {
-            moveable.MoveTo(hit.point);
+            foreach (ISelectable unit in selectedUnits)
+            {
+                if (unit is IMoveable moveable)
+                {
+                    moveable.MoveTo(hit.point);
+                }
+            }
         }
     }
 
@@ -202,27 +209,57 @@ public class PlayerInput : MonoBehaviour
 
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
+            selectionBox.sizeDelta = Vector2.zero;
             startingMousePosition = Mouse.current.position.ReadValue();
             selectionBox.gameObject.SetActive(true);
+            selectionBoxUnits.Clear();
         }
         else if (Mouse.current.leftButton.isPressed && !Mouse.current.leftButton.wasPressedThisFrame)
         {
-            ResizeSelectionBox();
+            Bounds selectionBoxBounds = ResizeSelectionBox();
+
+            foreach (AbstractUnit unit in aliveUnits)
+            {
+                Vector2 unitPosition = mainCamera.WorldToScreenPoint(unit.transform.position);
+
+                if (selectionBoxBounds.Contains(unitPosition))
+                {
+                    selectionBoxUnits.Add(unit);
+                }
+            }
         }
         else if (Mouse.current.leftButton.wasReleasedThisFrame)
         {
+            DeselectAll();
+
+            foreach (AbstractUnit unit in selectionBoxUnits)
+            {
+                unit.Select();
+            }
+
             selectionBox.gameObject.SetActive(false);
             selectionBox.sizeDelta = Vector2.zero;
         }
     }
 
-    void ResizeSelectionBox()
+    Bounds ResizeSelectionBox()
     {
         Vector2 currentMousePosition = Mouse.current.position.ReadValue();
         float width = currentMousePosition.x - startingMousePosition.x;
         float height = currentMousePosition.y - startingMousePosition.y;
         selectionBox.anchoredPosition = startingMousePosition + new Vector2(width / 2, height / 2);
         selectionBox.sizeDelta = new Vector2(Mathf.Abs(width), Mathf.Abs(height));
+
+        return new Bounds(selectionBox.anchoredPosition, selectionBox.sizeDelta);
+    }
+
+    void DeselectAll()
+    {
+        ISelectable[] currentlySelectedUnits = selectedUnits.ToArray();
+        foreach (ISelectable unit in currentlySelectedUnits)
+        {
+            unit.Deselect();
+        }
     }
 
     void HandleUnitSpawn(UnitSpawnEvent evt)
@@ -232,12 +269,12 @@ public class PlayerInput : MonoBehaviour
 
     void HandleUnitSelection(UnitSelectedEvent evt)
     {
-        selectedUnit = evt.Unit;
+        selectedUnits.Add(evt.Unit);
     }
 
     void HandleUnitDeselection(UnitDeselectedEvent evt)
     {
-        selectedUnit = null;
+        selectedUnits.Remove(evt.Unit);
     }
 
     private void OnDestroy()
