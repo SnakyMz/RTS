@@ -6,7 +6,7 @@ using UnityEngine;
 public class SupplyHut : MonoBehaviour, ISelectable
 {
     [SerializeField] GameObject decal;
-    [SerializeField] int health;
+    [field: SerializeField] public int Health { private set; get; }
 
     public void Select()
     {

@@ -212,8 +212,8 @@ public class PlayerInput : MonoBehaviour
                 if (unitsOnLayer >= maxUnitsPerLayer)
                 {
                     unitsOnLayer = 0;
-                    circleRadius += unit.agentRadius * 3f;
-                    maxUnitsPerLayer = Mathf.FloorToInt(2 * Mathf.PI * circleRadius / (unit.agentRadius * 2f));
+                    circleRadius += unit.AgentRadius * 3f;
+                    maxUnitsPerLayer = Mathf.FloorToInt(2 * Mathf.PI * circleRadius / (unit.AgentRadius * 2f));
                     radialoffset = 2 * Mathf.PI / maxUnitsPerLayer;
                 }
             }

@@ -10,7 +10,7 @@ namespace Assets.Scripts.Units
     {
         [SerializeField] GameObject decal;
 
-        public float agentRadius => agent.radius;
+        public float AgentRadius => agent.radius;
 
         NavMeshAgent agent;
 
