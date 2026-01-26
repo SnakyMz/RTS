@@ -184,11 +184,37 @@ public class PlayerInput : MonoBehaviour
 
         if (Mouse.current.rightButton.wasReleasedThisFrame && Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, groundLayerMask))
         {
-            foreach (ISelectable unit in selectedUnits)
+            List<AbstractUnit> abstractUnits = new(selectedUnits.Count);
+            foreach (ISelectable selectable in selectedUnits)
             {
-                if (unit is IMoveable moveable)
+                if (selectable is AbstractUnit unit)
                 {
-                    moveable.MoveTo(hit.point);
+                    abstractUnits.Add(unit);
+                }
+            }
+
+            int unitsOnLayer = 0;
+            int maxUnitsPerLayer = 1;
+            float circleRadius = 0f;
+            float radialoffset = 0f;
+
+            foreach (AbstractUnit unit in abstractUnits)
+            {
+                Vector3 targetPosition = new(
+                    hit.point.x + circleRadius + Mathf.Cos(radialoffset * unitsOnLayer),
+                    hit.point.y,
+                    hit.point.z + circleRadius + Mathf.Sin(radialoffset * unitsOnLayer)
+                );
+
+                unit.MoveTo(targetPosition);
+                unitsOnLayer++;
+
+                if (unitsOnLayer >= maxUnitsPerLayer)
+                {
+                    unitsOnLayer = 0;
+                    circleRadius += unit.agentRadius * 2f;
+                    maxUnitsPerLayer = Mathf.FloorToInt(2 * Mathf.PI * circleRadius / (unit.agentRadius * 2f));
+                    radialoffset = 2 * Mathf.PI / maxUnitsPerLayer;
                 }
             }
         }
