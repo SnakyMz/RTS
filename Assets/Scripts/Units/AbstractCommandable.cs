@@ -5,9 +5,17 @@ using UnityEngine;
 
 public abstract class AbstractCommandable : MonoBehaviour, ISelectable
 {
-    [field: SerializeField] public int Health { private set; get; }
+    [field: SerializeField] public int CurrentHealth { private set; get; }
+    [field: SerializeField] public int MaxHealth { private set; get; }
 
+    [SerializeField] UnitSO unitSO;
     [SerializeField] GameObject decal;
+
+    protected virtual void Start()
+    {
+        CurrentHealth = unitSO.Health;
+        MaxHealth = unitSO.Health;
+    }
 
     public void Select()
     {

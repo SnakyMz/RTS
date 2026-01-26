@@ -153,6 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80eeb7aba216f984eafc221ad6d83a99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  unitSO: {fileID: 11400000, guid: 783d9bbdaf9b9df49a173865ccc42efe, type: 2}
   decal: {fileID: 3122422527474286854}
 --- !u!136 &7423722027816033439
 CapsuleCollider:

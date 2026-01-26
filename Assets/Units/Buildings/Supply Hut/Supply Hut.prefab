@@ -129,8 +129,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d814920d0dca6854fb512af0901d9621, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SupplyHut
+  unitSO: {fileID: 11400000, guid: c7e49909e20a27e489f965195255f72a, type: 2}
   decal: {fileID: 111761598920808258}
-  health: 10
 --- !u!208 &6807341230957182
 NavMeshObstacle:
   m_ObjectHideFlags: 0
