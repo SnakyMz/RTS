@@ -201,9 +201,9 @@ public class PlayerInput : MonoBehaviour
             foreach (AbstractUnit unit in abstractUnits)
             {
                 Vector3 targetPosition = new(
-                    hit.point.x + circleRadius + Mathf.Cos(radialoffset * unitsOnLayer),
+                    hit.point.x + circleRadius * Mathf.Cos(radialoffset * unitsOnLayer),
                     hit.point.y,
-                    hit.point.z + circleRadius + Mathf.Sin(radialoffset * unitsOnLayer)
+                    hit.point.z + circleRadius * Mathf.Sin(radialoffset * unitsOnLayer)
                 );
 
                 unit.MoveTo(targetPosition);
@@ -212,7 +212,7 @@ public class PlayerInput : MonoBehaviour
                 if (unitsOnLayer >= maxUnitsPerLayer)
                 {
                     unitsOnLayer = 0;
-                    circleRadius += unit.agentRadius * 2f;
+                    circleRadius += unit.agentRadius * 3f;
                     maxUnitsPerLayer = Mathf.FloorToInt(2 * Mathf.PI * circleRadius / (unit.agentRadius * 2f));
                     radialoffset = 2 * Mathf.PI / maxUnitsPerLayer;
                 }
