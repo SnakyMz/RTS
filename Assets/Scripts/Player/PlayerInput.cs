@@ -1,3 +1,4 @@
+using Assets.Scripts.Commands;
 using Assets.Scripts.EventBus;
 using Assets.Scripts.Events;
 using Assets.Scripts.Units;
@@ -5,7 +6,6 @@ using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 public class PlayerInput : MonoBehaviour
 {
@@ -193,28 +193,17 @@ public class PlayerInput : MonoBehaviour
                 }
             }
 
-            int unitsOnLayer = 0;
-            int maxUnitsPerLayer = 1;
-            float circleRadius = 0f;
-            float radialoffset = 0f;
-
-            foreach (AbstractUnit unit in abstractUnits)
+            for (int i = 0; i < abstractUnits.Count; i++)
             {
-                Vector3 targetPosition = new(
-                    hit.point.x + circleRadius * Mathf.Cos(radialoffset * unitsOnLayer),
-                    hit.point.y,
-                    hit.point.z + circleRadius * Mathf.Sin(radialoffset * unitsOnLayer)
-                );
+                CommandContext context = new(abstractUnits[i], hit, i);
 
-                unit.MoveTo(targetPosition);
-                unitsOnLayer++;
-
-                if (unitsOnLayer >= maxUnitsPerLayer)
+                foreach (ICommand command in abstractUnits[i].AvailaibleCommands)
                 {
-                    unitsOnLayer = 0;
-                    circleRadius += unit.AgentRadius * 3f;
-                    maxUnitsPerLayer = Mathf.FloorToInt(2 * Mathf.PI * circleRadius / (unit.AgentRadius * 2f));
-                    radialoffset = 2 * Mathf.PI / maxUnitsPerLayer;
+                    if (command.CanHandle(context))
+                    {
+                        command.Handle(context);
+                        break;
+                    }
                 }
             }
         }

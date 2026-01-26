@@ -153,6 +153,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80eeb7aba216f984eafc221ad6d83a99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <CurrentHealth>k__BackingField: 0
+  <MaxHealth>k__BackingField: 0
+  <AvailaibleCommands>k__BackingField:
+  - {fileID: 11400000, guid: 9ccd6f623d4ab2743b874cd519b74a23, type: 2}
   unitSO: {fileID: 11400000, guid: 783d9bbdaf9b9df49a173865ccc42efe, type: 2}
   decal: {fileID: 3122422527474286854}
 --- !u!136 &7423722027816033439
